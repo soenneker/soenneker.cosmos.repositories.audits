@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Soenneker.Cosmos.Repositories.Audits.Abstract;
 
-
 /// <summary>
 ///  Audit records aren't accessible to external resources for mutation.  This is essentially a readonly repository.
 /// </summary>
@@ -22,15 +21,15 @@ public interface IAuditsRepository : ICosmosRepository<AuditDocument>
     /// </summary>
     /// <remarks>"Audit records may not be added explicitly."</remarks>
     [Obsolete("Not supported", true)]
-    new ValueTask<string> AddItem(AuditDocument document, bool useQueue = false, bool excludeResponse = false,
-        CancellationToken cancellationToken = default);
+    new ValueTask<string> AddItem(AuditDocument document, bool useQueue = false, bool excludeResponse = false, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// **DO NOT CALL** Hides underlying implementation
     /// </summary>
     /// <remarks>"Audit records may not be updated."</remarks>
     [Obsolete("Not supported", true)]
-    new ValueTask UpdateItem(string id, AuditDocument document, bool useQueue = false, bool excludeResponse = false, CancellationToken cancellationToken = default);
+    new ValueTask UpdateItem(string id, AuditDocument document, bool useQueue = false, bool excludeResponse = false,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// **DO NOT CALL** Hides underlying implementation
