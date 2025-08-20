@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Soenneker.Cosmos.Container.Abstract;
@@ -27,9 +28,11 @@ public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsR
     {
     }
 
-    public async ValueTask<List<AuditDocument>?> GetByEntityId(string entityId, CancellationToken cancellationToken = default)
+    public async ValueTask<List<AuditDocument>?> GetByEntity(string entityId, CancellationToken cancellationToken = default)
     {
-        IQueryable<AuditDocument> query = await BuildQueryable(null, cancellationToken).NoSync();
+        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(entityId) };
+
+        IQueryable<AuditDocument> query = await BuildQueryable(requestOptions, cancellationToken).NoSync();
         query = query.Where(x => x.PartitionKey == entityId);
         return await GetItems(query, cancellationToken: cancellationToken).NoSync();
     }
