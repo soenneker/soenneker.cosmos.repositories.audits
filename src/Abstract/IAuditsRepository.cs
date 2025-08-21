@@ -14,7 +14,7 @@ namespace Soenneker.Cosmos.Repositories.Audits.Abstract;
 public interface IAuditsRepository : ICosmosRepository<AuditDocument>
 {
     [Pure]
-    ValueTask<List<AuditDocument>?> GetByEntity(string partitionKey, CancellationToken cancellationToken = default);
+    ValueTask<List<AuditDocument>> GetByEntity(string partitionKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// **DO NOT CALL** Hides underlying implementation

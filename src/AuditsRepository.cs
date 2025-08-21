@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Soenneker.Cosmos.Container.Abstract;
 using Soenneker.Cosmos.Repositories.Audits.Abstract;
 using Soenneker.Cosmos.Repository;
 using Soenneker.Documents.Audit;
-using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.BackgroundQueue.Abstract;
 using Soenneker.Utils.UserContext.Abstract;
 
@@ -28,13 +25,9 @@ public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsR
     {
     }
 
-    public async ValueTask<List<AuditDocument>?> GetByEntity(string entityId, CancellationToken cancellationToken = default)
+    public ValueTask<List<AuditDocument>> GetByEntity(string entityId, CancellationToken cancellationToken = default)
     {
-        var requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(entityId) };
-
-        IQueryable<AuditDocument> query = await BuildQueryable(requestOptions, cancellationToken).NoSync();
-        query = query.Where(x => x.PartitionKey == entityId);
-        return await GetItems(query, cancellationToken: cancellationToken).NoSync();
+        return GetAllByPartitionKey(entityId, cancellationToken: cancellationToken);
     }
 
     [Obsolete("Not supported", true)]
