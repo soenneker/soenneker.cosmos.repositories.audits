@@ -9,6 +9,7 @@ using Soenneker.Cosmos.Repositories.Audits.Abstract;
 using Soenneker.Cosmos.Repository;
 using Soenneker.Documents.Audit;
 using Soenneker.Utils.BackgroundQueue.Abstract;
+using Soenneker.Utils.MemoryStream.Abstract;
 using Soenneker.Utils.UserContext.Abstract;
 
 namespace Soenneker.Cosmos.Repositories.Audits;
@@ -21,7 +22,8 @@ public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsR
     public override bool AuditEnabled => false;
 
     public AuditsRepository(ICosmosContainerUtil cosmosContainerUtil, IConfiguration config, ILogger<AuditsRepository> logger, IUserContext userContext,
-        IBackgroundQueue backgroundQueue) : base(cosmosContainerUtil, config, logger, userContext, backgroundQueue)
+        IBackgroundQueue backgroundQueue, IMemoryStreamUtil memoryStreamUtil) : base(cosmosContainerUtil, config, logger, userContext, backgroundQueue,
+        memoryStreamUtil)
     {
     }
 
