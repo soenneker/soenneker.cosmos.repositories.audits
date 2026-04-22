@@ -1,20 +1,19 @@
-﻿using Soenneker.Cosmos.Repositories.Audits.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Cosmos.Repositories.Audits.Abstract;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Cosmos.Repositories.Audits.Tests;
 
-[Collection("Collection")]
-public class AuditsRepositoryTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public class AuditsRepositoryTests : HostedUnitTest
 {
     private readonly IAuditsRepository _util;
 
-    public AuditsRepositoryTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public AuditsRepositoryTests(Host host) : base(host)
     {
         _util = Resolve<IAuditsRepository>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
