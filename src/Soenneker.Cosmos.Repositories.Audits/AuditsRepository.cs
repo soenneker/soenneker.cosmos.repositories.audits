@@ -17,8 +17,14 @@ namespace Soenneker.Cosmos.Repositories.Audits;
 /// <inheritdoc cref="IAuditsRepository"/>
 public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsRepository
 {
+    /// <summary>
+    /// Gets or sets container name.
+    /// </summary>
     public override string ContainerName => "audits";
 
+    /// <summary>
+    /// Gets or sets a value indicating whether audit enabled.
+    /// </summary>
     public override bool AuditEnabled => false;
 
     public AuditsRepository(ICosmosContainerUtil cosmosContainerUtil, IConfiguration config, ILogger<AuditsRepository> logger, IUserContext userContext,

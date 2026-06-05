@@ -13,6 +13,12 @@ namespace Soenneker.Cosmos.Repositories.Audits.Abstract;
 /// </summary>
 public interface IAuditsRepository : ICosmosRepository<AuditDocument>
 {
+    /// <summary>
+    /// Gets by entity.
+    /// </summary>
+    /// <param name="partitionKey">The partition key.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task containing the result of the operation.</returns>
     [Pure]
     ValueTask<List<AuditDocument>> GetByEntity(string partitionKey, CancellationToken cancellationToken = default);
 
