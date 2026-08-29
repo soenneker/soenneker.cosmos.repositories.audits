@@ -15,6 +15,8 @@ public static class AuditsRepositoryRegistrar
     /// <summary>
     /// Adds <see cref="IAuditsRepository"/> as a singleton service. <para/>
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddAuditsRepositoryAsSingleton(this IServiceCollection services)
     {
         services.AddBackgroundQueueAsSingleton()
@@ -28,6 +30,8 @@ public static class AuditsRepositoryRegistrar
     /// <summary>
     /// Adds <see cref="IAuditsRepository"/> as a scoped service. <para/>
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddAuditsRepositoryAsScoped(this IServiceCollection services)
     {
         services.AddBackgroundQueueAsSingleton()
