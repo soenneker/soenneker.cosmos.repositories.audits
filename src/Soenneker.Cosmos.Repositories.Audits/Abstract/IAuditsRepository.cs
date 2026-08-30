@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 namespace Soenneker.Cosmos.Repositories.Audits.Abstract;
 
 /// <summary>
-///  Audit records aren't accessible to external resources for mutation.  This is essentially a readonly repository.
+/// Provides repository access specialized for audit documents.
 /// </summary>
 public interface IAuditsRepository : ICosmosRepository<AuditDocument>
 {
     /// <summary>
-    /// Gets by entity.
+    /// Gets all audit documents stored under an entity's partition key.
     /// </summary>
     /// <param name="partitionKey">Partition key used to route the database operation.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
-    /// <returns>A task whose result is the collection returned by get By Entity.</returns>
+    /// <returns>All matching audit documents.</returns>
     [Pure]
     ValueTask<List<AuditDocument>> GetByEntity(string partitionKey, CancellationToken cancellationToken = default);
 

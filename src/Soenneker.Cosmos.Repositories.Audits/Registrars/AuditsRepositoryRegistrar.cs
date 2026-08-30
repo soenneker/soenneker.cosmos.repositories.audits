@@ -13,16 +13,17 @@ namespace Soenneker.Cosmos.Repositories.Audits.Registrars;
 public static class AuditsRepositoryRegistrar
 {
     /// <summary>
-    /// Adds <see cref="IAuditsRepository"/> as a singleton service. <para/>
+    /// Adds <see cref="IAuditsRepository"/> as a scoped service for compatibility with callers using the former singleton-named registration.
     /// </summary>
     /// <param name="services">Service collection that receives the registration.</param>
     /// <returns>The same service collection, so additional registrations can be chained.</returns>
+    [System.Obsolete("AuditsRepository depends on scoped user context. Use AddAuditsRepositoryAsScoped instead.")]
     public static IServiceCollection AddAuditsRepositoryAsSingleton(this IServiceCollection services)
     {
         services.AddBackgroundQueueAsSingleton()
                 .AddUserContextAsScoped()
                 .AddCosmosContainerUtilAsSingleton()
-                .TryAddSingleton<IAuditsRepository, AuditsRepository>();
+                .TryAddScoped<IAuditsRepository, AuditsRepository>();
 
         return services;
     }

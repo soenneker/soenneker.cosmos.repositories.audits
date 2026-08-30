@@ -5,47 +5,43 @@
 
 # Soenneker.Cosmos.Repositories.Audits
 
-Audit records aren't accessible to external resources for mutation. This is essentially a readonly repository.
+A Cosmos DB repository specialized for `AuditDocument` records stored in the `audits` container.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.Cosmos.Repositories.Audits
 ```
 
-## Quick start
+## Registration
 
 ```csharp
+using Soenneker.Cosmos.Repositories.Audits.Abstract;
 using Soenneker.Cosmos.Repositories.Audits.Registrars;
-using Microsoft.Extensions.DependencyInjection;
 
-var services = new ServiceCollection();
-var result = services.AddAuditsRepositoryAsSingleton();
+services.AddAuditsRepositoryAsScoped();
+
+IAuditsRepository audits = serviceProvider.GetRequiredService<IAuditsRepository>();
 ```
 
-Adds `IAuditsRepository` as a singleton service.
+Use the scoped registration because the repository depends on scoped user context. `AddAuditsRepositoryAsSingleton()` remains for source compatibility but is obsolete and now also registers a scoped repository.
 
-## What you get
+The registrar adds the background queue, user context, and Cosmos container dependencies. Configure the Cosmos dependencies under `Azure:Cosmos` as required by those packages.
 
-- `IAuditsRepository` — Audit records aren't accessible to external resources for mutation. This is essentially a readonly repository.
-- `AuditsRepositoryRegistrar` — A data persistence abstraction layer for Cosmos DB Audit type documents.
+## Get an entity's audit history
 
-## API at a glance
+```csharp
+List<AuditDocument> history = await audits.GetByEntity(
+    entityId,
+    cancellationToken);
+```
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `IAuditsRepository.AddItem(document, useQueue, excludeResponse, cancellationToken)` | **DO NOT CALL** Hides underlying implementation. | A task whose result is the text returned by add Item. |
-| `IAuditsRepository.UpdateItem(id, document, useQueue, excludeResponse, cancellationToken)` | **DO NOT CALL** Hides underlying implementation. | A task that completes when the item update is complete. |
-| `IAuditsRepository.DeleteItem(id, useQueue, cancellationToken)` | **DO NOT CALL** Hides underlying implementation. | A task that completes when the item deletion is complete. |
-| `AuditsRepositoryRegistrar.AddAuditsRepositoryAsSingleton(services)` | Adds `IAuditsRepository` as a singleton service. | The same service collection, so additional registrations can be chained. |
-| `AuditsRepositoryRegistrar.AddAuditsRepositoryAsScoped(services)` | Adds `IAuditsRepository` as a scoped service. | The same service collection, so additional registrations can be chained. |
+`entityId` is used as the Cosmos partition key. The method returns every audit document in that partition; it does not apply additional ordering or pagination.
 
-## Important behavior
+## Mutation boundary
 
-- `IAuditsRepository.AddItem(document, useQueue, excludeResponse, cancellationToken)`: "Audit records may not be added explicitly.".
-- `IAuditsRepository.UpdateItem(id, document, useQueue, excludeResponse, cancellationToken)`: "Audit records may not be updated.".
-- `IAuditsRepository.DeleteItem(id, useQueue, cancellationToken)`: "Audit records may not be deleted.".
+`AddItem`, the `UpdateItem(id, ...)` overload, and the `DeleteItem(id, ...)` overload are marked obsolete with compile-time errors and throw `NotSupportedException` from the concrete repository. Audit creation is expected to happen through the audit behavior in the general Cosmos repository rather than through this specialized repository.
 
-## Practical notes
+This API is not an authorization boundary. `IAuditsRepository` inherits the broader `ICosmosRepository<AuditDocument>` contract, which includes other mutation operations. Do not expose the repository to untrusted callers; enforce write restrictions in the application and Cosmos account permissions.
 
-- Cancellation stops pending work; it does not undo work that has already completed.
+The repository disables recursive audit generation for the `audits` container. Cosmos failures and cancellation propagate according to the underlying repository operation.
