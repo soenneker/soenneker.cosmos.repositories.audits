@@ -1,4 +1,5 @@
-﻿using Soenneker.Cosmos.Repository.Abstract;
+﻿using Soenneker.Cosmos.Repository.Dtos;
+using Soenneker.Cosmos.Repository.Abstract;
 using Soenneker.Documents.Audit;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,10 @@ public interface IAuditsRepository : ICosmosRepository<AuditDocument>
     /// </summary>
     /// <param name="partitionKey">Partition key used to route the database operation.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <param name="readOptions">Overrides repository read defaults. Null inherits them; an explicit empty value restores SDK defaults.</param>
     /// <returns>All matching audit documents.</returns>
     [Pure]
-    ValueTask<List<AuditDocument>> GetByEntity(string partitionKey, CancellationToken cancellationToken = default);
+    ValueTask<List<AuditDocument>> GetByEntity(string partitionKey, CosmosReadOptions? readOptions = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// **DO NOT CALL** Hides underlying implementation
@@ -42,11 +44,12 @@ public interface IAuditsRepository : ICosmosRepository<AuditDocument>
     /// <param name="useQueue">Whether to enqueue the write for background execution instead of awaiting Redis directly.</param>
     /// <param name="excludeResponse">exclude Response returned by the upstream operation.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <param name="writeOptions">Unused. This operation is unsupported regardless of write options.</param>
     /// <returns>A task that completes when the item update is complete.</returns>
     /// <remarks>"Audit records may not be updated."</remarks>
     [Obsolete("Not supported", true)]
     new ValueTask UpdateItem(string id, AuditDocument document, bool useQueue = false, bool excludeResponse = false,
-        CancellationToken cancellationToken = default);
+        CosmosWriteOptions? writeOptions = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// **DO NOT CALL** Hides underlying implementation
@@ -54,8 +57,9 @@ public interface IAuditsRepository : ICosmosRepository<AuditDocument>
     /// <param name="id">Identifier of the audits repository instance or registration to target.</param>
     /// <param name="useQueue">Whether to enqueue the write for background execution instead of awaiting Redis directly.</param>
     /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <param name="writeOptions">Unused. This operation is unsupported regardless of write options.</param>
     /// <returns>A task that completes when the item deletion is complete.</returns>
     /// <remarks>"Audit records may not be deleted."</remarks>
     [Obsolete("Not supported", true)]
-    new ValueTask DeleteItem(string id, bool useQueue = false, CancellationToken cancellationToken = default);
+    new ValueTask DeleteItem(string id, bool useQueue = false, CosmosWriteOptions? writeOptions = null, CancellationToken cancellationToken = default);
 }

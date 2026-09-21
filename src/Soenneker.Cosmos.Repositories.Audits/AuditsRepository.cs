@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Soenneker.Cosmos.Repository.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ using Soenneker.Utils.UserContext.Abstract;
 
 namespace Soenneker.Cosmos.Repositories.Audits;
 
-/// <inheritdoc cref="IAuditsRepository"/>
 public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsRepository
 {
     /// <summary>
@@ -33,9 +33,9 @@ public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsR
     {
     }
 
-    public ValueTask<List<AuditDocument>> GetByEntity(string entityId, CancellationToken cancellationToken = default)
+    public ValueTask<List<AuditDocument>> GetByEntity(string entityId, CosmosReadOptions? readOptions = null, CancellationToken cancellationToken = default)
     {
-        return GetAllByPartitionKey(entityId, cancellationToken: cancellationToken);
+        return GetAllByPartitionKey(entityId, readOptions: readOptions, cancellationToken: cancellationToken);
     }
 
     [Obsolete("Not supported", true)]
@@ -47,13 +47,13 @@ public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsR
 
     [Obsolete("Not supported", true)]
     public new ValueTask UpdateItem(string id, AuditDocument document, bool useQueue = false, bool excludeResponse = false,
-        CancellationToken cancellationToken = default)
+        CosmosWriteOptions? writeOptions = null, CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException("Audit records may not be updated");
     }
 
     [Obsolete("Not supported", true)]
-    public new ValueTask DeleteItem(string id, bool useQueue = false, CancellationToken cancellationToken = default)
+    public new ValueTask DeleteItem(string id, bool useQueue = false, CosmosWriteOptions? writeOptions = null, CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException("Audit records may not be deleted");
     }
