@@ -39,8 +39,10 @@ public sealed class AuditsRepository : CosmosRepository<AuditDocument>, IAuditsR
     }
 
     [Obsolete("Not supported", true)]
+#pragma warning disable CS0809 // Keep the override to reject audit writes through the base repository as well.
     public override ValueTask<string> AddItem(AuditDocument document, bool useQueue = false, bool excludeResponse = false,
         CancellationToken cancellationToken = default)
+#pragma warning restore CS0809
     {
         throw new NotSupportedException("Audit records may not be added explicitly");
     }
